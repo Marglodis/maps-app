@@ -2,6 +2,11 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { LngLat, Map, Marker } from 'maplibre-gl';
 import { environment } from '../../../../environments/environments';
 
+interface MarkerAndColor {
+  color: string;
+  marker: Marker;
+}
+
 @Component({
   standalone: false,
   templateUrl: './markers-page.component.html',
@@ -10,7 +15,8 @@ import { environment } from '../../../../environments/environments';
 export class MarkersPageComponent implements AfterViewInit {
   @ViewChild('map') divMap?: ElementRef;
 
-  public zoom: number = 10;
+  public markers: MarkerAndColor[] = [];
+
   public map?: Map;
   public currentCenter: LngLat = new LngLat(
     -63.17603657179461,
@@ -24,7 +30,7 @@ export class MarkersPageComponent implements AfterViewInit {
       container: this.divMap.nativeElement, // container id
       style: `https://api.maptiler.com/maps/basic/style.json?key=${environment.mapbox_key}`, //'https://demotiles.maplibre.org/style.json', // stylesheet location
       center: this.currentCenter, // starting position [lng, lat]
-      zoom: this.zoom, // starting zoom
+      zoom: 13, // starting zoom
     });
 
     //REferencia para la creacion y personlización de los marcadores
@@ -47,7 +53,7 @@ export class MarkersPageComponent implements AfterViewInit {
 
     this.addMarker(lngLat, color);
   }
-  
+
   addMarker(lngLat: LngLat, color: string) {
     if (!this.map) throw 'Mapa no inicializado';
 
@@ -57,5 +63,12 @@ export class MarkersPageComponent implements AfterViewInit {
     })
       .setLngLat(lngLat)
       .addTo(this.map);
+
+      this.markers.push({color, marker});
+  }
+
+  deleteMarker(index: number) {
+    this.markers[index].marker.remove();
+    this.markers.splice(index, 1);    
   }
 }
