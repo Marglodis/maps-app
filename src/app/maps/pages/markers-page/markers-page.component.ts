@@ -5,36 +5,57 @@ import { environment } from '../../../../environments/environments';
 @Component({
   standalone: false,
   templateUrl: './markers-page.component.html',
-  styleUrl: './markers-page.component.css'
+  styleUrl: './markers-page.component.css',
 })
 export class MarkersPageComponent implements AfterViewInit {
-@ViewChild('map') divMap?: ElementRef;
+  @ViewChild('map') divMap?: ElementRef;
 
-public zoom: number = 10;
-public map?: Map;
-public currentCenter: LngLat = new LngLat(-63.17603657179461, 9.748762730497646);
+  public zoom: number = 10;
+  public map?: Map;
+  public currentCenter: LngLat = new LngLat(
+    -63.17603657179461,
+    9.748762730497646
+  );
 
-ngAfterViewInit(): void {
- 
+  ngAfterViewInit(): void {
     if (!this.divMap) throw 'El elemento HTML no fue encontrado';
 
     this.map = new Map({
       container: this.divMap.nativeElement, // container id
-      style:
-        `https://api.maptiler.com/maps/basic/style.json?key=${environment.mapbox_key}`, //'https://demotiles.maplibre.org/style.json', // stylesheet location
+      style: `https://api.maptiler.com/maps/basic/style.json?key=${environment.mapbox_key}`, //'https://demotiles.maplibre.org/style.json', // stylesheet location
       center: this.currentCenter, // starting position [lng, lat]
       zoom: this.zoom, // starting zoom
     });
 
     //REferencia para la creacion y personlización de los marcadores
-  /*   const makerHtml = document.createElement('div');
+    /*   const makerHtml = document.createElement('div');
     makerHtml.innerHTML = 'Hola Mundo';
 
     const marker = new Marker({
       element: makerHtml
       // color: 'red'
     }).setLngLat(this.currentCenter).addTo(this.map); */
+  }
 
-}
+  createMarker() {
+    if (!this.map) return;
 
+    const color = '#xxxxxx'.replace(/x/g, (y) =>
+      ((Math.random() * 16) | 0).toString(16)
+    );
+    const lngLat = this.map.getCenter();
+
+    this.addMarker(lngLat, color);
+  }
+  
+  addMarker(lngLat: LngLat, color: string) {
+    if (!this.map) throw 'Mapa no inicializado';
+
+    const marker = new Marker({
+      color,
+      draggable: true,
+    })
+      .setLngLat(lngLat)
+      .addTo(this.map);
+  }
 }
