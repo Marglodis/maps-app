@@ -28,7 +28,6 @@ export class ZoomPageComponent implements AfterViewInit, OnDestroy{
         center: this.currentCenter, // starting position [lng, lat]
         zoom: this.zoom, // starting zoom
       });
-      console.log('Mapa inicializado:', map);
    this.mapListeners();
   }
 
