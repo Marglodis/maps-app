@@ -2,9 +2,15 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { LngLat, Map, Marker } from 'maplibre-gl';
 import { environment } from '../../../../environments/environments';
 
+//Estas interfaces deben estar en archivos aparte.
 interface MarkerAndColor {
   color: string;
   marker: Marker;
+}
+
+interface PlainMarker {
+  color: string;
+  lngLat: number[];
 }
 
 @Component({
@@ -33,6 +39,7 @@ export class MarkersPageComponent implements AfterViewInit {
       zoom: 13, // starting zoom
     });
 
+    this.loadMarkersFromLocalStorage();
     //REferencia para la creacion y personlización de los marcadores
     /*   const makerHtml = document.createElement('div');
     makerHtml.innerHTML = 'Hola Mundo';
@@ -64,11 +71,47 @@ export class MarkersPageComponent implements AfterViewInit {
       .setLngLat(lngLat)
       .addTo(this.map);
 
-      this.markers.push({color, marker});
+    this.markers.push({ color, marker });
+    this.saveToLocalStorage();
+
+    marker.on('dragend', () => this.saveToLocalStorage());
   }
 
   deleteMarker(index: number) {
     this.markers[index].marker.remove();
-    this.markers.splice(index, 1);    
+    this.markers.splice(index, 1);
+  }
+
+  flyTo(marker: Marker) {
+    this.map?.flyTo({
+      center: marker.getLngLat(),
+      zoom: 15,
+    });
+  }
+
+  saveToLocalStorage() {
+    const plainMarkers: PlainMarker[] = this.markers.map(
+      ({ color, marker }) => {
+        return {
+          color,
+          lngLat: marker.getLngLat().toArray(),
+        }
+      });
+      localStorage.setItem('plainMarkers', JSON.stringify(plainMarkers));
+  }
+
+  loadMarkersFromLocalStorage() {
+    const plainMarkersString = localStorage.getItem('plainMarkers') ?? '[]';
+
+    if (!plainMarkersString) return;
+    const plainMarkers: PlainMarker[] = JSON.parse(plainMarkersString);
+
+    plainMarkers.forEach(({ color, lngLat }) => {
+      const [lng, lat] = lngLat;
+
+      const coords = new LngLat(lng, lat);
+
+      this.addMarker(coords, color);
+    });
   }
 }

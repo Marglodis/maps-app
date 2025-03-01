@@ -1,13 +1,21 @@
 # MapsApp
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.5.
+No usar directamente en AngularCLI (a menos que estén creadas las variables de entorno), ya que las variables de entorno se crean basados en el .env
+
+## Pasos:
+Clonar el .env.template y renombrarlo a .env
+Llenar las variables de entorno acorde
+Crear Angular Envs (opcional)
 
 ## Development server
 
 To start a local development server, run:
 
 ```bash
-ng serve
+npm run envs
+
+npm run start
 ```
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
